@@ -40,6 +40,7 @@
     <panel>
       <title>Analysis Query</title>
       <html>
+        <![CDATA[
         <div style="padding: 15px; background-color: #f5f5f5; border-radius: 5px;">
           <strong>Current Analysis:</strong>
           <p id="current_analysis">$analysis_type$</p>
@@ -86,6 +87,7 @@
             });
           </script>
         </div>
+        ]]>
       </html>
     </panel>
   </row>
@@ -115,6 +117,7 @@
     <panel>
       <title>Analysis Tips</title>
       <html>
+        <![CDATA[
         <div style="padding: 15px;">
           <h4>💡 Tips for Better Analysis:</h4>
           <ul style="line-height: 1.8;">
@@ -159,6 +162,7 @@
             </tr>
           </table>
         </div>
+        ]]>
       </html>
     </panel>
   </row>
