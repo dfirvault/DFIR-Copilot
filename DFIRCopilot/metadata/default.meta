@@ -1,0 +1,13 @@
+# DFIR Copilot default metadata
+
+[]
+access = read : [ * ], write : [ admin ]
+export = system
+
+[views]
+access = read : [ * ], write : [ admin ]
+export = system
+
+[commands]
+access = read : [ * ], write : [ admin ]
+export = system

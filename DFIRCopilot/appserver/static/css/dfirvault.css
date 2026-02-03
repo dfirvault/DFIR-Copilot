@@ -1,0 +1,173 @@
+/* DFIR Copilot by DFIRVault App Styles */
+
+.dashboard-body {
+    background-color: #f5f7fa;
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.panel {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.panel-head {
+    background-color: #667eea;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.fieldset {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.input {
+    margin-bottom: 15px;
+}
+
+.input label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+code {
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    color: #c7254e;
+}
+
+.info-box {
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border-left: 4px solid;
+}
+
+.info-box.success {
+    background-color: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+}
+
+.info-box.warning {
+    background-color: #fff3e0;
+    border-color: #ff9800;
+    color: #e65100;
+}
+
+.info-box.info {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    color: #1565c0;
+}
+
+.info-box.error {
+    background-color: #ffebee;
+    border-color: #f44336;
+    color: #c62828;
+}
+
+/* Table styling for results */
+table.llm-results {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.llm-results th {
+    background-color: #667eea;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+table.llm-results td {
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table.llm-results tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Response formatting */
+.llm-response {
+    white-space: pre-wrap;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #fafafa;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #667eea;
+}
+
+/* Chunk indicators */
+.chunk-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #667eea;
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.chunk-badge.final {
+    background-color: #4caf50;
+}
+
+/* Status indicators */
+.status-success {
+    color: #4caf50;
+    font-weight: 600;
+}
+
+.status-error {
+    color: #f44336;
+    font-weight: 600;
+}
+
+/* Button styling */
+button.btn-primary {
+    background-color: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+button.btn-primary:hover {
+    background-color: #5568d3;
+}
+
+/* Loading indicator */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -1,0 +1,268 @@
+<form version="1.1">
+  <label>DFIR Copilot by DFIRVault Configuration</label>
+  <description>Configure local LLM integration for DFIR analysis</description>
+  
+  <fieldset submitButton="true" autoRun="true">
+    <input type="text" token="dummy" searchWhenChanged="true">
+      <label>Load Configuration</label>
+      <default>load</default>
+      <change>
+        <condition value="load">
+          <eval token="form.endpoint">$result.endpoint$</eval>
+          <eval token="form.model">$result.model$</eval>
+          <eval token="form.temperature">$result.temperature$</eval>
+          <eval token="form.max_tokens">$result.max_tokens$</eval>
+          <eval token="form.timeout">$result.timeout$</eval>
+          <eval token="form.chunk_size">$result.chunk_size$</eval>
+          <eval token="form.analysis_mode">$result.analysis_mode$</eval>
+        </condition>
+      </change>
+      <search>
+        <query>
+          | rest /services/admin/dfircopilot_config/llm_config 
+          | fields endpoint model temperature max_tokens timeout chunk_size analysis_mode available_models
+        </query>
+        <earliest>-1m</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+  </fieldset>
+  
+  <row>
+    <panel>
+      <html>
+        <div style="padding: 20px; background-color: #f0f4f7; border-radius: 5px; margin-bottom: 20px;">
+          <h2 style="color: #333; margin-top: 0;">🔐 DFIR Copilot - Local LLM DFIR Assistant</h2>
+          <p style="color: #666; font-size: 14px;">
+            DFIR Copilot integrates with your locally hosted Ollama LLM to provide intelligent analysis 
+            of security logs and DFIR data. Configure your LLM endpoint and preferences below.
+          </p>
+          <div style="margin-top: 15px; padding: 10px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 3px;">
+            <strong style="color: #856404;">⚠️ Prerequisites:</strong>
+            <ul style="color: #856404; margin: 5px 0 0 20px;">
+              <li>Ollama must be installed and running on your system</li>
+              <li>At least one model must be pulled (e.g., <code>ollama pull mistral</code>)</li>
+              <li>Ollama API should be accessible at the configured endpoint</li>
+            </ul>
+          </div>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row>
+    <panel>
+      <title>LLM Endpoint Configuration</title>
+      <input type="text" token="endpoint">
+        <label>Ollama Endpoint URL</label>
+        <default>http://localhost:11434</default>
+      </input>
+      
+      <input type="dropdown" token="model">
+        <label>LLM Model</label>
+        <choice value="mistral">Mistral</choice>
+        <choice value="llama2">Llama 2</choice>
+        <choice value="codellama">Code Llama</choice>
+        <choice value="llama3">Llama 3</choice>
+        <choice value="phi">Phi</choice>
+        <choice value="gemma">Gemma</choice>
+        <default>mistral</default>
+      </input>
+      
+      <html>
+        <div style="margin: 10px 0; padding: 10px; background-color: #e7f3ff; border-left: 3px solid #2196F3;">
+          <strong style="color: #1976D2;">💡 Model Selection Tips:</strong>
+          <ul style="color: #1565C0; margin: 5px 0 0 20px; font-size: 13px;">
+            <li><strong>Mistral:</strong> Great balance of performance and accuracy for DFIR tasks</li>
+            <li><strong>Llama 2/3:</strong> Excellent for detailed forensic analysis</li>
+            <li><strong>Phi:</strong> Lightweight option for faster processing</li>
+          </ul>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row>
+    <panel>
+      <title>LLM Parameters</title>
+      <input type="text" token="temperature">
+        <label>Temperature (0.0 - 1.0)</label>
+        <default>0.7</default>
+      </input>
+      
+      <input type="text" token="max_tokens">
+        <label>Max Tokens</label>
+        <default>2000</default>
+      </input>
+      
+      <input type="text" token="timeout">
+        <label>Request Timeout (seconds)</label>
+        <default>120</default>
+      </input>
+      
+      <html>
+        <div style="margin: 10px 0; padding: 8px; background-color: #f5f5f5; border-radius: 3px;">
+          <p style="color: #666; font-size: 12px; margin: 0;">
+            <strong>Temperature:</strong> Lower values (0.1-0.3) = more focused/deterministic. Higher values (0.7-0.9) = more creative.<br/>
+            <strong>Max Tokens:</strong> Maximum length of LLM response. Increase for more detailed analysis.<br/>
+            <strong>Timeout:</strong> How long to wait for LLM response before timing out.
+          </p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row>
+    <panel>
+      <title>RAG &amp; Chunking Configuration</title>
+      <input type="text" token="chunk_size">
+        <label>Events Per Chunk</label>
+        <default>10</default>
+      </input>
+      
+      <input type="dropdown" token="analysis_mode">
+        <label>Default Analysis Mode</label>
+        <choice value="summary">Summary</choice>
+        <choice value="detailed">Detailed</choice>
+        <choice value="forensic">Forensic</choice>
+        <choice value="threat_intelligence">Threat Intelligence</choice>
+        <default>forensic</default>
+      </input>
+      
+      <html>
+        <div style="margin: 10px 0; padding: 10px; background-color: #e8f5e9; border-left: 3px solid #4CAF50;">
+          <strong style="color: #2E7D32;">📊 RAG Pipeline:</strong>
+          <p style="color: #388E3C; font-size: 13px; margin: 5px 0 0 0;">
+            DFIR Copilot uses a progressive summarization approach where each chunk's analysis 
+            provides context for the next chunk, ensuring no information loss across large datasets.
+          </p>
+          <ul style="color: #388E3C; margin: 5px 0 0 20px; font-size: 13px;">
+            <li><strong>Summary:</strong> Quick overview of key findings</li>
+            <li><strong>Detailed:</strong> In-depth analysis of each event</li>
+            <li><strong>Forensic:</strong> Timeline reconstruction, evidence preservation, IOC identification</li>
+            <li><strong>Threat Intelligence:</strong> TTPs, attribution, threat actor analysis</li>
+          </ul>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row>
+    <panel>
+      <title>Available Models</title>
+      <table>
+        <search>
+          <query>
+            | rest /services/admin/dfircopilot_config/llm_config 
+            | fields available_models
+            | eval models=split(trim(available_models, "[]\""), ",")
+            | mvexpand models
+            | eval model_name=trim(models, "\" ")
+            | where model_name!=""
+            | table model_name
+            | rename model_name as "Available Ollama Models"
+          </query>
+          <earliest>-1m</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+      
+      <html>
+        <div style="margin-top: 10px; padding: 8px; background-color: #fff3e0; border-left: 3px solid #FF9800;">
+          <p style="color: #E65100; font-size: 12px; margin: 0;">
+            <strong>No models showing?</strong> Ensure Ollama is running and accessible at the configured endpoint.
+            Pull models using: <code>ollama pull mistral</code>
+          </p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row>
+    <panel>
+      <title>Test Connection</title>
+      <html>
+        <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 5px;">
+          <p style="color: #333; margin-bottom: 10px;">
+            Test your Ollama connection using the search bar below:
+          </p>
+          <code style="display: block; padding: 10px; background-color: #f5f5f5; border-radius: 3px; color: #d32f2f;">
+            | makeresults count=3 
+            | eval test_event="Security event " . _time 
+            | llmhandler prompt="Analyze these test events" model="mistral" chunk_size=1
+          </code>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row>
+    <panel>
+      <title>Usage Examples</title>
+      <html>
+        <div style="padding: 15px; background-color: #fff; border: 1px solid #ddd; border-radius: 5px;">
+          <h4 style="color: #333; margin-top: 0;">Example Queries:</h4>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #1976D2;">Basic Security Analysis:</strong>
+            <code style="display: block; margin-top: 5px; padding: 10px; background-color: #f5f5f5; border-radius: 3px;">
+              index=security sourcetype=firewall 
+              | head 20 
+              | llmhandler prompt="Identify suspicious network activity" model="mistral"
+            </code>
+          </div>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #1976D2;">Forensic Timeline Analysis:</strong>
+            <code style="display: block; margin-top: 5px; padding: 10px; background-color: #f5f5f5; border-radius: 3px;">
+              index=windows EventCode=4624 
+              | llmhandler prompt="Reconstruct the authentication timeline" analysis_mode="forensic" chunk_size=15
+            </code>
+          </div>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #1976D2;">Threat Intelligence Analysis:</strong>
+            <code style="display: block; margin-top: 5px; padding: 10px; background-color: #f5f5f5; border-radius: 3px;">
+              index=proxy 
+              | where status=200 
+              | llmhandler prompt="Identify potential C2 beaconing patterns" analysis_mode="threat_intelligence"
+            </code>
+          </div>
+          
+          <div style="margin: 15px 0;">
+            <strong style="color: #1976D2;">Large Dataset with Chunking:</strong>
+            <code style="display: block; margin-top: 5px; padding: 10px; background-color: #f5f5f5; border-radius: 3px;">
+              index=main sourcetype=syslog 
+              | llmhandler prompt="Find anomalies and security issues" chunk_size=50 temperature=0.3
+            </code>
+          </div>
+          
+          <div style="margin-top: 20px; padding: 10px; background-color: #e3f2fd; border-left: 3px solid #2196F3;">
+            <strong style="color: #1565C0;">💡 Pro Tips:</strong>
+            <ul style="color: #1976D2; margin: 5px 0 0 20px; font-size: 13px;">
+              <li>Filter events before sending to LLM to reduce noise and improve analysis quality</li>
+              <li>Use smaller chunk_size for detailed analysis, larger for summaries</li>
+              <li>Lower temperature (0.1-0.3) for forensic accuracy, higher (0.7-0.9) for creative threat hunting</li>
+              <li>The LLM response includes llm_chunk, llm_response, and llm_summary fields</li>
+            </ul>
+          </div>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row>
+    <panel>
+      <html>
+        <div style="padding: 15px; background-color: #f9f9f9; border-radius: 5px; text-align: center;">
+          <p style="color: #666; margin: 0;">
+            <strong>Need Help?</strong> Check the DFIR Copilot documentation or ensure Ollama is running with: 
+            <code>ollama serve</code>
+          </p>
+        </div>
+      </html>
+    </panel>
+  </row>
+</form>

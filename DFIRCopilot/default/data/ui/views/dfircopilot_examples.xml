@@ -1,0 +1,165 @@
+<form version="1.1">
+  <label>DFIR Copilot by DFIRVault Analysis Examples</label>
+  <description>Pre-built analysis examples for common DFIR scenarios</description>
+  
+  <fieldset submitButton="false">
+    <input type="time" token="time_picker">
+      <label>Time Range</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    
+    <input type="dropdown" token="analysis_type">
+      <label>Analysis Type</label>
+      <choice value="authentication">Failed Authentication Analysis</choice>
+      <choice value="network">Network Anomaly Detection</choice>
+      <choice value="malware">Malware Behavior Analysis</choice>
+      <choice value="data_exfil">Data Exfiltration Detection</choice>
+      <choice value="lateral">Lateral Movement Analysis</choice>
+      <default>authentication</default>
+    </input>
+  </fieldset>
+  
+  <row>
+    <panel>
+      <html>
+        <div style="padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px;">
+          <h2 style="margin: 0 0 10px 0;">🔍 DFIRVault Analysis Examples</h2>
+          <p style="margin: 0; opacity: 0.9;">
+            Select an analysis type above to see pre-built queries and LLM-powered analysis.
+            These examples demonstrate how to use DFIRVault for common DFIR scenarios.
+          </p>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row depends="$analysis_type$">
+    <panel>
+      <title>Analysis Query</title>
+      <html>
+        <div style="padding: 15px; background-color: #f5f5f5; border-radius: 5px;">
+          <strong>Current Analysis:</strong>
+          <p id="current_analysis">$analysis_type$</p>
+          
+          <div style="margin-top: 15px;">
+            <strong>Query:</strong>
+            <pre style="background-color: #fff; padding: 10px; border-radius: 3px; overflow-x: auto;">
+              <code id="query_display"></code>
+            </pre>
+          </div>
+          
+          <script>
+            require([
+              'jquery',
+              'splunkjs/mvc',
+              'splunkjs/mvc/simplexml/ready!'
+            ], function($, mvc) {
+              var tokens = mvc.Components.getInstance('default');
+              var submittedTokens = mvc.Components.getInstance('submitted');
+              
+              var queries = {
+                'authentication': 'index=security (action=failure OR action=failed) (source=*auth* OR sourcetype=*auth*)\n| stats count by src_ip, user, _time\n| where count > 3\n| sort - count\n| head 50\n| llmhandler prompt="Analyze these failed authentication attempts. Identify potential brute force attacks, credential stuffing, or account compromise patterns. Provide specific recommendations." analysis_mode="forensic" chunk_size=10',
+                
+                'network': 'index=network sourcetype=firewall\n| stats sum(bytes_out) as total_bytes, dc(dest_ip) as unique_destinations by src_ip\n| where total_bytes > 1000000 OR unique_destinations > 100\n| sort - total_bytes\n| head 30\n| llmhandler prompt="Identify anomalous network behavior that could indicate data exfiltration, C2 communication, or network reconnaissance." analysis_mode="threat_intelligence" temperature=0.4',
+                
+                'malware': 'index=endpoint (process_name=*.exe OR process_name=*.dll)\n| where NOT [| inputlookup known_good_processes.csv | fields process_name]\n| stats count by process_name, process_path, parent_process, dest\n| llmhandler prompt="Analyze these process executions for potential malware indicators. Focus on suspicious process names, paths, parent-child relationships, and execution patterns." analysis_mode="forensic" chunk_size=15',
+                
+                'data_exfil': 'index=proxy OR index=network\n| stats sum(bytes_out) as uploaded_bytes by src_ip, dest_domain, dest_ip\n| where uploaded_bytes > 10485760\n| sort - uploaded_bytes\n| llmhandler prompt="Identify potential data exfiltration attempts. Look for unusual upload volumes, suspicious destinations, and patterns consistent with data theft." analysis_mode="threat_intelligence"',
+                
+                'lateral': 'index=windows EventCode=4624 OR EventCode=4625 OR EventCode=4648\n| stats count by user, src_ip, dest, EventCode, LogonType\n| where count > 5\n| llmhandler prompt="Analyze these logon events for lateral movement patterns. Identify privilege escalation, pass-the-hash, or other lateral movement techniques." analysis_mode="forensic" chunk_size=20'
+              };
+              
+              tokens.on('change:analysis_type', function(model, value) {
+                if (value && queries[value]) {
+                  $('#query_display').text(queries[value]);
+                }
+              });
+              
+              // Initialize on load
+              var currentType = tokens.get('analysis_type');
+              if (currentType && queries[currentType]) {
+                $('#query_display').text(queries[currentType]);
+              }
+            });
+          </script>
+        </div>
+      </html>
+    </panel>
+  </row>
+  
+  <row depends="$analysis_type$">
+    <panel>
+      <title>LLM Analysis Results</title>
+      <table>
+        <search>
+          <query>
+            `dfircopilot_$analysis_type$_search`
+          </query>
+          <earliest>$time_picker.earliest$</earliest>
+          <latest>$time_picker.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="count">20</option>
+        <format type="color" field="llm_status">
+          <colorPalette type="map">{"success":#65A637,"error":#D93F3C}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+  
+  <row>
+    <panel>
+      <title>Analysis Tips</title>
+      <html>
+        <div style="padding: 15px;">
+          <h4>💡 Tips for Better Analysis:</h4>
+          <ul style="line-height: 1.8;">
+            <li><strong>Pre-filter data:</strong> Apply SPL filters before sending to LLM to reduce noise</li>
+            <li><strong>Adjust chunk_size:</strong> Smaller chunks (5-10) for detailed analysis, larger (30-50) for summaries</li>
+            <li><strong>Use specific prompts:</strong> Clear, focused questions get better answers</li>
+            <li><strong>Choose appropriate modes:</strong> 'forensic' for investigations, 'threat_intelligence' for hunting</li>
+            <li><strong>Iterate:</strong> Refine your query based on initial LLM insights</li>
+          </ul>
+          
+          <h4 style="margin-top: 20px;">🔧 Optimization Guidelines:</h4>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr style="background-color: #f5f5f5;">
+              <th style="padding: 8px; border: 1px solid #ddd;">Scenario</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Chunk Size</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Temperature</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Mode</th>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border: 1px solid #ddd;">Forensic Investigation</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">10-15</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">0.2-0.4</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">forensic</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border: 1px solid #ddd;">Threat Hunting</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">20-30</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">0.6-0.8</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">threat_intelligence</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border: 1px solid #ddd;">Daily Review</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">40-50</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">0.5-0.7</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">summary</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px; border: 1px solid #ddd;">Incident Response</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">10-20</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">0.3-0.5</td>
+              <td style="padding: 8px; border: 1px solid #ddd;">detailed</td>
+            </tr>
+          </table>
+        </div>
+      </html>
+    </panel>
+  </row>
+</form>
