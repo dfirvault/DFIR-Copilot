@@ -5,6 +5,8 @@ A Splunk app that brings local, offline LLM-powered analysis directly to your DF
 DFIR Copilot by DFIRVault transforms how cybersecurity analysts interact with Splunk data. By implementing a sophisticated Retrieval-Augmented Generation (RAG) pipeline with progressive summarization, the app allows you to converse with your logs. It maintains context across large datasets, providing coherent, detailed analyses for incident response, forensic investigations, and threat hunting—all processed securely on your local infrastructure.
 
 ## Core Features & Benefits
+- 💸 100% Free: No cost to setup and get running in your lab, just connect to your existing splunk trial or enterprise server.
+
 - 🔒 100% Local & Private: Works completely offline with Ollama. Your sensitive log data never leaves your network.
 
 - 🧠 DFIR-Optimized AI: Built specifically for cybersecurity with analysis modes for forensics, threat intelligence, summarization, and detailed investigation.
