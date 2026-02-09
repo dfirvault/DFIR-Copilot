@@ -1,6 +1,8 @@
 # DFIR Copilot for Splunk
 A Splunk app that brings local, offline LLM-powered analysis directly to your DFIR and threat hunting workflows. DFIR Copilot uses Ollama to run models like Mistral or Llama3 locally, enabling you to ask complex questions about your Splunk search results without ever sending data to the cloud.
 
+<img width="2297" height="1170" alt="Screenshot 2026-02-09 161852" src="https://github.com/user-attachments/assets/55126202-237c-437a-ab79-23ab6e8169ff" />
+
 ## App Overview 
 DFIR Copilot by DFIRVault transforms how cybersecurity analysts interact with Splunk data. By implementing a sophisticated Retrieval-Augmented Generation (RAG) pipeline with progressive summarization, the app allows you to converse with your logs. It maintains context across large datasets, providing coherent, detailed analyses for incident response, forensic investigations, and threat hunting—all processed securely on your local infrastructure.
 
