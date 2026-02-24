@@ -34,3 +34,6 @@ DFIR Copilot by DFIRVault transforms how cybersecurity analysts interact with Sp
 - Threat Hunting: Identify complex patterns like C2 beaconing or data exfiltration in proxy or DNS logs.
 
 - Log Analysis: Understand noisy or complex application logs without writing intricate SPL.
+
+## Installation
+- Download the tar.gz release file and install this into your Splunk. That's it.
