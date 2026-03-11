@@ -3,6 +3,8 @@ A Splunk app that brings local, offline LLM-powered analysis directly to your DF
 
 <img width="2297" height="1170" alt="Screenshot 2026-02-09 161852" src="https://github.com/user-attachments/assets/55126202-237c-437a-ab79-23ab6e8169ff" />
 
+The DFIR Splunk App is now officially on the app store! [https://splunkbase.splunk.com/app/8368](https://splunkbase.splunk.com/app/8531). This initial version provides a streamlined, easy-to-install package to get you started on your DFIR LLM journey.
+
 ## App Overview 
 DFIR Copilot by DFIRVault transforms how cybersecurity analysts interact with Splunk data. By implementing a sophisticated Retrieval-Augmented Generation (RAG) pipeline with progressive summarization, the app allows you to converse with your logs. It maintains context across large datasets, providing coherent, detailed analyses for incident response, forensic investigations, and threat hunting—all processed securely on your local infrastructure.
 
